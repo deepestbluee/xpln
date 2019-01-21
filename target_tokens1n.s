@@ -4354,3 +4354,929 @@ syscall
 li $v0,10
 syscall
 .end main
+
+.data
+
+B: .float 0.0
+C: .float 0.0
+D: .float 0.0
+E: .float 0.0
+F: .float 0.0
+t390: .float 0.0
+t391: .float 0.0
+t392: .float 0.0
+t393: .float 0.0
+t394: .float 0.0
+A: .float 0.0
+zzeerroo: .float 0.0
+t0: .float 0.0
+
+.text
+
+main:
+li.s $f0,5.0
+s.s $f0,B
+li.s $f0,2.0
+s.s $f0,C
+li.s $f0,10.0
+s.s $f0,D
+li.s $f0,10.0
+s.s $f0,E
+li $v0,5
+syscall
+s.s $t0, $v0
+s.s E,$t0
+li.s $f0,20.0
+s.s $f0,F
+l.s $f0,C
+l.s $f2,D
+mul.s $f0,$f0,$f2
+s.s $f0,t390
+l.s $f0,E
+l.s $f2,F
+add.s $f0,$f0,$f2
+s.s $f0,t391
+l.s $f0,t391
+#converting to float
+li $t0,5
+mtc1 $t0,$f6
+cvt.s.w $f2,$f6
+#conversion done
+div.s $f0,$f0,$f2
+s.s $f0,t392
+l.s $f0,t390
+l.s $f2,t392
+sub.s $f0,$f0,$f2
+s.s $f0,t393
+l.s $f0,B
+l.s $f2,t393
+add.s $f0,$f0,$f2
+s.s $f0,t394
+l.s $f0,t394
+s.s $f0,A
+li $v0,5
+syscall
+s.s $t0, $v0
+s.s B,$t0
+li $v0,1
+s.s $a0,B
+syscall
+#MIPs termination protocol:
+li $v0,10
+syscall
+.end main
+
+.data
+
+B: .float 0.0
+C: .float 0.0
+D: .float 0.0
+E: .float 0.0
+F: .float 0.0
+t395: .float 0.0
+t396: .float 0.0
+t397: .float 0.0
+t398: .float 0.0
+t399: .float 0.0
+A: .float 0.0
+zzeerroo: .float 0.0
+t0: .float 0.0
+
+.text
+
+main:
+li.s $f0,5.0
+s.s $f0,B
+li.s $f0,2.0
+s.s $f0,C
+li.s $f0,10.0
+s.s $f0,D
+li.s $f0,10.0
+s.s $f0,E
+li $v0,5
+syscall
+move $t0, $v0
+move E,$t0
+li.s $f0,20.0
+s.s $f0,F
+l.s $f0,C
+l.s $f2,D
+mul.s $f0,$f0,$f2
+s.s $f0,t395
+l.s $f0,E
+l.s $f2,F
+add.s $f0,$f0,$f2
+s.s $f0,t396
+l.s $f0,t396
+#converting to float
+li $t0,5
+mtc1 $t0,$f6
+cvt.s.w $f2,$f6
+#conversion done
+div.s $f0,$f0,$f2
+s.s $f0,t397
+l.s $f0,t395
+l.s $f2,t397
+sub.s $f0,$f0,$f2
+s.s $f0,t398
+l.s $f0,B
+l.s $f2,t398
+add.s $f0,$f0,$f2
+s.s $f0,t399
+l.s $f0,t399
+s.s $f0,A
+li $v0,5
+syscall
+move $t0, $v0
+move B,$t0
+li $v0,1
+move $a0,B
+syscall
+#MIPs termination protocol:
+li $v0,10
+syscall
+.end main
+
+.data
+
+B: .float 0.0
+C: .float 0.0
+D: .float 0.0
+E: .float 0.0
+F: .float 0.0
+t400: .float 0.0
+t401: .float 0.0
+t402: .float 0.0
+t403: .float 0.0
+t404: .float 0.0
+A: .float 0.0
+zzeerroo: .float 0.0
+t0: .float 0.0
+
+.text
+
+main:
+li.s $f0,5.0
+s.s $f0,B
+li.s $f0,2.0
+s.s $f0,C
+li.s $f0,10.0
+s.s $f0,D
+li.s $f0,10.0
+s.s $f0,E
+li $v0,5
+syscall
+move $t0, $v0
+move E,$t0
+li.s $f0,20.0
+s.s $f0,F
+l.s $f0,C
+l.s $f2,D
+mul.s $f0,$f0,$f2
+s.s $f0,t400
+l.s $f0,E
+l.s $f2,F
+add.s $f0,$f0,$f2
+s.s $f0,t401
+l.s $f0,t401
+#converting to float
+li $t0,5
+mtc1 $t0,$f6
+cvt.s.w $f2,$f6
+#conversion done
+div.s $f0,$f0,$f2
+s.s $f0,t402
+l.s $f0,t400
+l.s $f2,t402
+sub.s $f0,$f0,$f2
+s.s $f0,t403
+l.s $f0,B
+l.s $f2,t403
+add.s $f0,$f0,$f2
+s.s $f0,t404
+l.s $f0,t404
+s.s $f0,A
+li $v0,5
+syscall
+move $t0, $v0
+move B,$t0
+li $v0,1
+move $a0,A
+syscall
+li $v0,1
+move $a0,B
+syscall
+li $v0,1
+move $a0,C
+syscall
+li $v0,1
+move $a0,D
+syscall
+li $v0,1
+move $a0,E
+syscall
+#MIPs termination protocol:
+li $v0,10
+syscall
+.end main
+
+.data
+
+B: .float 0.0
+C: .float 0.0
+D: .float 0.0
+E: .float 0.0
+F: .float 0.0
+A<B: .float 0.0
+t425: .float 0.0
+t426: .float 0.0
+t427: .float 0.0
+t428: .float 0.0
+t429: .float 0.0
+t430: .float 0.0
+A: .float 0.0
+zzeerroo: .float 0.0
+t0: .float 0.0
+
+.text
+
+main:
+li.s $f0,5.0
+s.s $f0,B
+li.s $f0,2.0
+s.s $f0,C
+li.s $f0,10.0
+s.s $f0,D
+li.s $f0,10.0
+s.s $f0,E
+li $v0,5
+syscall
+move $t0, $v0
+move E,$t0
+li.s $f0,20.0
+s.s $f0,F
+l.s $f0,C
+l.s $f2,D
+mul.s $f0,$f0,$f2
+s.s $f0,t425
+l.s $f0,E
+l.s $f2,F
+add.s $f0,$f0,$f2
+s.s $f0,t426
+l.s $f0,t426
+#converting to float
+li $t0,5
+mtc1 $t0,$f6
+cvt.s.w $f2,$f6
+#conversion done
+div.s $f0,$f0,$f2
+s.s $f0,t427
+l.s $f0,t425
+l.s $f2,t427
+sub.s $f0,$f0,$f2
+s.s $f0,t428
+l.s $f0,B
+l.s $f2,t428
+add.s $f0,$f0,$f2
+s.s $f0,t429
+l.s $f0,A<B
+l.s $f2,t429
+add.s $f0,$f0,$f2
+s.s $f0,t430
+l.s $f0,t430
+s.s $f0,A
+li $v0,5
+syscall
+move $t0, $v0
+move B,$t0
+li $v0,1
+move $a0,A
+syscall
+li $v0,1
+move $a0,B
+syscall
+li $v0,1
+move $a0,C
+syscall
+li $v0,1
+move $a0,D
+syscall
+li $v0,1
+move $a0,E
+syscall
+#MIPs termination protocol:
+li $v0,10
+syscall
+.end main
+
+.data
+
+B: .float 0.0
+C: .float 0.0
+D: .float 0.0
+E: .float 0.0
+F: .float 0.0
+t432: .float 0.0
+t433: .float 0.0
+t434: .float 0.0
+t435: .float 0.0
+t436: .float 0.0
+A: .float 0.0
+A<A: .float 0.0
+zzeerroo: .float 0.0
+t0: .float 0.0
+
+.text
+
+main:
+li.s $f0,5.0
+s.s $f0,B
+li.s $f0,2.0
+s.s $f0,C
+li.s $f0,10.0
+s.s $f0,D
+li.s $f0,10.0
+s.s $f0,E
+li $v0,5
+syscall
+move $t0, $v0
+move E,$t0
+li.s $f0,20.0
+s.s $f0,F
+l.s $f0,C
+l.s $f2,D
+mul.s $f0,$f0,$f2
+s.s $f0,t432
+l.s $f0,E
+l.s $f2,F
+add.s $f0,$f0,$f2
+s.s $f0,t433
+l.s $f0,t433
+#converting to float
+li $t0,5
+mtc1 $t0,$f6
+cvt.s.w $f2,$f6
+#conversion done
+div.s $f0,$f0,$f2
+s.s $f0,t434
+l.s $f0,t432
+l.s $f2,t434
+sub.s $f0,$f0,$f2
+s.s $f0,t435
+l.s $f0,B
+l.s $f2,t435
+add.s $f0,$f0,$f2
+s.s $f0,t436
+l.s $f0,t436
+s.s $f0,A
+li $v0,5
+syscall
+move $t0, $v0
+move B,$t0
+li $v0,1
+move $a0,A
+syscall
+li $v0,1
+move $a0,B
+syscall
+li $v0,1
+move $a0,C
+syscall
+li $v0,1
+move $a0,D
+syscall
+li $v0,1
+move $a0,E
+syscall
+l.s $f0,A<A
+s.s $f0,B
+#MIPs termination protocol:
+li $v0,10
+syscall
+.end main
+
+.data
+
+B: .float 0.0
+C: .float 0.0
+D: .float 0.0
+E: .float 0.0
+F: .float 0.0
+t438: .float 0.0
+t439: .float 0.0
+t440: .float 0.0
+t441: .float 0.0
+t442: .float 0.0
+A: .float 0.0
+A<A: .float 0.0
+U: .float 0.0
+zzeerroo: .float 0.0
+t0: .float 0.0
+
+.text
+
+main:
+li.s $f0,5.0
+s.s $f0,B
+li.s $f0,2.0
+s.s $f0,C
+li.s $f0,10.0
+s.s $f0,D
+li.s $f0,10.0
+s.s $f0,E
+li $v0,5
+syscall
+move $t0, $v0
+move E,$t0
+li.s $f0,20.0
+s.s $f0,F
+l.s $f0,C
+l.s $f2,D
+mul.s $f0,$f0,$f2
+s.s $f0,t438
+l.s $f0,E
+l.s $f2,F
+add.s $f0,$f0,$f2
+s.s $f0,t439
+l.s $f0,t439
+#converting to float
+li $t0,5
+mtc1 $t0,$f6
+cvt.s.w $f2,$f6
+#conversion done
+div.s $f0,$f0,$f2
+s.s $f0,t440
+l.s $f0,t438
+l.s $f2,t440
+sub.s $f0,$f0,$f2
+s.s $f0,t441
+l.s $f0,B
+l.s $f2,t441
+add.s $f0,$f0,$f2
+s.s $f0,t442
+l.s $f0,t442
+s.s $f0,A
+li $v0,5
+syscall
+move $t0, $v0
+move B,$t0
+li $v0,1
+move $a0,A
+syscall
+li $v0,1
+move $a0,B
+syscall
+li $v0,1
+move $a0,C
+syscall
+li $v0,1
+move $a0,D
+syscall
+li $v0,1
+move $a0,E
+syscall
+l.s $f0,A<A
+s.s $f0,U
+#MIPs termination protocol:
+li $v0,10
+syscall
+.end main
+
+.data
+
+B: .float 0.0
+C: .float 0.0
+D: .float 0.0
+E: .float 0.0
+F: .float 0.0
+t466: .float 0.0
+t467: .float 0.0
+t468: .float 0.0
+t469: .float 0.0
+t470: .float 0.0
+A: .float 0.0
+t471: .float 0.0
+U: .float 0.0
+zzeerroo: .float 0.0
+t0: .float 0.0
+
+.text
+
+main:
+li.s $f0,5.0
+s.s $f0,B
+li.s $f0,2.0
+s.s $f0,C
+li.s $f0,10.0
+s.s $f0,D
+li.s $f0,10.0
+s.s $f0,E
+li $v0,5
+syscall
+move $t0, $v0
+move E,$t0
+li.s $f0,20.0
+s.s $f0,F
+l.s $f0,C
+l.s $f2,D
+mul.s $f0,$f0,$f2
+s.s $f0,t466
+l.s $f0,E
+l.s $f2,F
+add.s $f0,$f0,$f2
+s.s $f0,t467
+l.s $f0,t467
+#converting to float
+li $t0,5
+mtc1 $t0,$f6
+cvt.s.w $f2,$f6
+#conversion done
+div.s $f0,$f0,$f2
+s.s $f0,t468
+l.s $f0,t466
+l.s $f2,t468
+sub.s $f0,$f0,$f2
+s.s $f0,t469
+l.s $f0,B
+l.s $f2,t469
+add.s $f0,$f0,$f2
+s.s $f0,t470
+l.s $f0,t470
+s.s $f0,A
+li $v0,5
+syscall
+move $t0, $v0
+move B,$t0
+li $v0,1
+move $a0,A
+syscall
+li $v0,1
+move $a0,B
+syscall
+li $v0,1
+move $a0,C
+syscall
+li $v0,1
+move $a0,D
+syscall
+li $v0,1
+move $a0,E
+syscall
+l.s $f0,A
+l.s $f2,A
+add.s $f0,$f0,$f2
+s.s $f0,t471
+l.s $f0,t471
+s.s $f0,U
+#MIPs termination protocol:
+li $v0,10
+syscall
+.end main
+
+.data
+
+B: .float 0.0
+C: .float 0.0
+D: .float 0.0
+E: .float 0.0
+F: .float 0.0
+t521: .float 0.0
+t522: .float 0.0
+t523: .float 0.0
+t524: .float 0.0
+t525: .float 0.0
+A: .float 0.0
+t526: .float 0.0
+zzeerroo: .float 0.0
+t0: .float 0.0
+
+.text
+
+main:
+li.s $f0,5.0
+s.s $f0,B
+li.s $f0,2.0
+s.s $f0,C
+li.s $f0,10.0
+s.s $f0,D
+li.s $f0,10.0
+s.s $f0,E
+li $v0,5
+syscall
+move $t0, $v0
+move E,$t0
+li.s $f0,20.0
+s.s $f0,F
+l.s $f0,C
+l.s $f2,D
+mul.s $f0,$f0,$f2
+s.s $f0,t521
+l.s $f0,E
+l.s $f2,F
+add.s $f0,$f0,$f2
+s.s $f0,t522
+l.s $f0,t522
+#converting to float
+li $t0,5
+mtc1 $t0,$f6
+cvt.s.w $f2,$f6
+#conversion done
+div.s $f0,$f0,$f2
+s.s $f0,t523
+l.s $f0,t521
+l.s $f2,t523
+sub.s $f0,$f0,$f2
+s.s $f0,t524
+l.s $f0,B
+l.s $f2,t524
+add.s $f0,$f0,$f2
+s.s $f0,t525
+l.s $f0,t525
+s.s $f0,A
+li $v0,5
+syscall
+move $t0, $v0
+move B,$t0
+li $v0,1
+move $a0,A
+syscall
+li $v0,1
+move $a0,B
+syscall
+li $v0,1
+move $a0,C
+syscall
+li $v0,1
+move $a0,D
+syscall
+li $v0,1
+move $a0,E
+syscallunknown TAC code: (t526 A A)
+#MIPs termination protocol:
+li $v0,10
+syscall
+.end main
+
+.data
+
+B: .float 0.0
+C: .float 0.0
+D: .float 0.0
+E: .float 0.0
+F: .float 0.0
+t530: .float 0.0
+t531: .float 0.0
+t532: .float 0.0
+t533: .float 0.0
+t534: .float 0.0
+A: .float 0.0
+t535: .float 0.0
+zzeerroo: .float 0.0
+t0: .float 0.0
+
+.text
+
+main:
+li.s $f0,5.0
+s.s $f0,B
+li.s $f0,2.0
+s.s $f0,C
+li.s $f0,10.0
+s.s $f0,D
+li.s $f0,10.0
+s.s $f0,E
+li $v0,5
+syscall
+move $t0, $v0
+move E,$t0
+li.s $f0,20.0
+s.s $f0,F
+l.s $f0,C
+l.s $f2,D
+mul.s $f0,$f0,$f2
+s.s $f0,t530
+l.s $f0,E
+l.s $f2,F
+add.s $f0,$f0,$f2
+s.s $f0,t531
+l.s $f0,t531
+#converting to float
+li $t0,5
+mtc1 $t0,$f6
+cvt.s.w $f2,$f6
+#conversion done
+div.s $f0,$f0,$f2
+s.s $f0,t532
+l.s $f0,t530
+l.s $f2,t532
+sub.s $f0,$f0,$f2
+s.s $f0,t533
+l.s $f0,B
+l.s $f2,t533
+add.s $f0,$f0,$f2
+s.s $f0,t534
+l.s $f0,t534
+s.s $f0,A
+li $v0,5
+syscall
+move $t0, $v0
+move B,$t0
+li $v0,1
+move $a0,A
+syscall
+li $v0,1
+move $a0,B
+syscall
+li $v0,1
+move $a0,C
+syscall
+li $v0,1
+move $a0,D
+syscall
+li $v0,1
+move $a0,E
+syscall
+l.s $f0,A
+l.s $f2,A
+blt.s $f0,$f0,$f2
+s.s $f0,t535
+#MIPs termination protocol:
+li $v0,10
+syscall
+.end main
+
+.data
+
+B: .float 0.0
+C: .float 0.0
+D: .float 0.0
+E: .float 0.0
+F: .float 0.0
+t538: .float 0.0
+t539: .float 0.0
+t540: .float 0.0
+t541: .float 0.0
+t542: .float 0.0
+A: .float 0.0
+t543: .float 0.0
+zzeerroo: .float 0.0
+t0: .float 0.0
+
+.text
+
+main:
+li.s $f0,5.0
+s.s $f0,B
+li.s $f0,2.0
+s.s $f0,C
+li.s $f0,10.0
+s.s $f0,D
+li.s $f0,10.0
+s.s $f0,E
+li $v0,5
+syscall
+move $t0, $v0
+move E,$t0
+li.s $f0,20.0
+s.s $f0,F
+l.s $f0,C
+l.s $f2,D
+mul.s $f0,$f0,$f2
+s.s $f0,t538
+l.s $f0,E
+l.s $f2,F
+add.s $f0,$f0,$f2
+s.s $f0,t539
+l.s $f0,t539
+#converting to float
+li $t0,5
+mtc1 $t0,$f6
+cvt.s.w $f2,$f6
+#conversion done
+div.s $f0,$f0,$f2
+s.s $f0,t540
+l.s $f0,t538
+l.s $f2,t540
+sub.s $f0,$f0,$f2
+s.s $f0,t541
+l.s $f0,B
+l.s $f2,t541
+add.s $f0,$f0,$f2
+s.s $f0,t542
+l.s $f0,t542
+s.s $f0,A
+li $v0,5
+syscall
+move $t0, $v0
+move B,$t0
+li $v0,1
+move $a0,A
+syscall
+li $v0,1
+move $a0,B
+syscall
+li $v0,1
+move $a0,C
+syscall
+li $v0,1
+move $a0,D
+syscall
+li $v0,1
+move $a0,E
+syscall
+l.s $f0,A
+l.s $f2,A
+blt.s $f0,$f0,$f2
+s.s $f0,t543
+#MIPs termination protocol:
+li $v0,10
+syscall
+.end main
+
+.data
+
+B: .float 0.0
+C: .float 0.0
+D: .float 0.0
+E: .float 0.0
+F: .float 0.0
+t547: .float 0.0
+t548: .float 0.0
+t549: .float 0.0
+t550: .float 0.0
+t551: .float 0.0
+A: .float 0.0
+t552: .float 0.0
+zzeerroo: .float 0.0
+t0: .float 0.0
+
+.text
+
+main:
+li.s $f0,5.0
+s.s $f0,B
+li.s $f0,2.0
+s.s $f0,C
+li.s $f0,10.0
+s.s $f0,D
+li.s $f0,10.0
+s.s $f0,E
+li $v0,5
+syscall
+move $t0, $v0
+move E,$t0
+li.s $f0,20.0
+s.s $f0,F
+l.s $f0,C
+l.s $f2,D
+mul.s $f0,$f0,$f2
+s.s $f0,t547
+l.s $f0,E
+l.s $f2,F
+add.s $f0,$f0,$f2
+s.s $f0,t548
+l.s $f0,t548
+#converting to float
+li $t0,5
+mtc1 $t0,$f6
+cvt.s.w $f2,$f6
+#conversion done
+div.s $f0,$f0,$f2
+s.s $f0,t549
+l.s $f0,t547
+l.s $f2,t549
+sub.s $f0,$f0,$f2
+s.s $f0,t550
+l.s $f0,B
+l.s $f2,t550
+add.s $f0,$f0,$f2
+s.s $f0,t551
+l.s $f0,t551
+s.s $f0,A
+li $v0,5
+syscall
+move $t0, $v0
+move B,$t0
+li $v0,1
+move $a0,A
+syscall
+li $v0,1
+move $a0,B
+syscall
+li $v0,1
+move $a0,C
+syscall
+li $v0,1
+move $a0,D
+syscall
+li $v0,1
+move $a0,E
+syscall
+l.s $f0,A
+l.s $f2,A
+blt $f0,$f0,$f2
+s.s $f0,t552
+#MIPs termination protocol:
+li $v0,10
+syscall
+.end main

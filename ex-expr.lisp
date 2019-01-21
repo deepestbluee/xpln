@@ -77,7 +77,7 @@
 ;;  (2ac op p1 p2)
 ;;  (2copy p1 p1)
 
-(defparameter *tac-to-mips* '((MULT "mul.s") (DIV "div.s")(ADD "add.s")(SUB "sub.s")(UMINUS "sub.s"))) ; intstruction set corr.
+(defparameter *tac-to-mips* '((MULT "mul.s") (DIV "div.s")(ADD "add.s")(SUB "sub.s")(UMINUS "sub.s")(BLT "blt"))) ; intstruction set corr.
  ;; MIPS is case-sensitive, so we use strings to map TAC code to MIPS
  ;; it also needs to know whether we use floating point or integer op (.s means float)
 
@@ -156,7 +156,9 @@
   (maphash #'(lambda (key val)
 	       (if (equal (sym-get-type val) 'VAR) (format t "~%~A: .float 0.0" (sym-get-value val))))
 	   *symtab*)
-  (format t "~%zzeerroo: .float 0.0")) ; MIPS has no float point zero constant like $zero for ints. bad bad
+  (format t "~%zzeerroo: .float 0.0")
+  (format t "~%t0: .float 0.0")
+  ) ; MIPS has no float point zero constant like $zero for ints. bad bad
 
 (defun create-code-segment (code)
   (format t "~2%.text~2%") 
@@ -168,6 +170,7 @@
 	    ((equal itype '2COPY) (mk-mips-2copy (rest instruction)))
       ((equal itype 'inp) (input-code (rest instruction)))
       ((equal itype 'out) (out-code (rest instruction)))
+      ((equal itype 'blt) (blt-code (rest instruction)))      
 	    (t (format t "unknown TAC code: ~A" instruction)))))
   (format t "~%#MIPs termination protocol:")
   (format t "~%li $v0,10") ; MIPs termination protocol
@@ -193,6 +196,10 @@
   (format t "~%li $v0,1") 
   (format t "~%move $a0,~A" (first val))
   (format t "~%syscall")
+  )
+
+(defun blt-code (val1 val2 label)
+  (format t "~%blt ~A,~A,~A" (first val1) (first val2) (first label)) 
   )
 
 (defun map-to-mips (code)
@@ -235,6 +242,10 @@
 
 (defun mk-out (inVal)
   (wrap (list 'out inVal)))
+
+(defun mk-blt (p1 p2 p3)
+  (wrap (list p1 p2 p3)))
+
 
 (defun mk-2copy (p1 p2)
   (wrap (list '2copy p1 p2)))
@@ -293,8 +304,9 @@
               (list (mk-place nil)
               (mk-code (var-get-code s)))))  
   (stmt  --> ret                  #'(lambda (ret)(identity ret))) 
-
-
+;simdilik burada
+ (stmt  --> condition                  #'(lambda (condition)(identity condition))) 
+;aa
   (ifx  --> WORD_IF condition stmts elsex ENDIF                   #'(lambda (s)
               (list (mk-place nil)
               (mk-code (var-get-code s)))))  
@@ -337,15 +349,60 @@
   (func  -->   ID plist                      #'(lambda (s)
               (list (mk-place nil)
               (mk-code (var-get-code s)))))   
-  (condition  -->   e BOP e                     #'(lambda (s)
-              (list (mk-place nil)
-              (mk-code (var-get-code s)))))   
+  
+  (condition  -->   e BOPA e                     #'(lambda (e1 BOPA e) (let ((newplace (newtemp)))
+                 (mk-sym-entry newplace)
+                 (list (mk-place newplace)
+                 (mk-code (append (var-get-code e1)
+                      (var-get-code e)
+                      (mk-3ac 'blt newplace
+                        (var-get-place e1)
+                        (var-get-place e))))))))
+  
+  ; (condition  -->   e BOPB e                     (lambda (e BOP e) (let ((newplace (newtemp)))
+  ;                (mk-sym-entry newplace)
+  ;                (list (mk-place newplace)
+  ;                (mk-code (append (var-get-code tt)
+  ;                     (var-get-code e)
+  ;                     (mk-3ac 'sub newplace
+  ;                       (var-get-place tt)
+  ;                       (var-get-place e))))))))
+
+  ; (condition  -->   e BOPC e                     (lambda (e BOP e) (let ((newplace (newtemp)))
+  ;                (mk-sym-entry newplace)
+  ;                (list (mk-place newplace)
+  ;                (mk-code (append (var-get-code tt)
+  ;                     (var-get-code e)
+  ;                     (mk-3ac 'sub newplace
+  ;                       (var-get-place tt)
+  ;                       (var-get-place e))))))))
+
+  ; (condition  -->   e BOPD e                     (lambda (e BOP e) (let ((newplace (newtemp)))
+  ;                (mk-sym-entry newplace)
+  ;                (list (mk-place newplace)
+  ;                (mk-code (append (var-get-code tt)
+  ;                     (var-get-code e)
+  ;                     (mk-3ac 'sub newplace
+  ;                       (var-get-place tt)
+  ;                       (var-get-place e))))))))
+
+  ; (condition  -->   e BOPE e                     (lambda (e BOP e) (let ((newplace (newtemp)))
+  ;                (mk-sym-entry newplace)
+  ;                (list (mk-place newplace)
+  ;                (mk-code (append (var-get-code tt)
+  ;                     (var-get-code e)
+  ;                     (mk-3ac 'sub newplace
+  ;                       (var-get-place tt)
+  ;                       (var-get-place e))))))))
+
   (condition  -->   condition LOP condition                     #'(lambda (s)
               (list (mk-place nil)
               (mk-code (var-get-code s)))))   
   (condition  -->   UOP condition                       #'(lambda (s)
               (list (mk-place nil)
               (mk-code (var-get-code s)))))   
+  
+
   (s  -->  ID COLONS EQUALS e                     #'(lambda (ID COLONS EQUALS e) 
               (progn 
           (mk-sym-entry (t-get-val ID))
@@ -398,17 +455,17 @@
   (ff  -->  OPEN_PLIST e CLOSE_PLIST  #'(lambda (OPEN_PLIST e CLOSE_PLIST) (identity e)))
   ))
 
-(defparameter lexforms '(END BOP LOP UOP WORDRETURN INPUT OUTPUT OPEN_PLIST CLOSE_PLIST COMMA COLONS EQUALS PLUS MINUS MULTI DIVIDE WORD_IF WORD_WHILE ENDIF ENDWH FUN ENDFUN WORD_ELSE NUMBER ID))
+(defparameter lexforms '(END BOPA BOPB BOPC BOPD BOPE LOP UOP WORDRETURN INPUT OUTPUT OPEN_PLIST CLOSE_PLIST COMMA COLONS EQUALS PLUS MINUS MULTI DIVIDE WORD_IF WORD_WHILE ENDIF ENDWH FUN ENDFUN WORD_ELSE NUMBER ID))
 
   (defparameter lexicon '(
             (\; END) ;; all but ID goes in the lexicon
 
-      (< BOP)
-      (<= BOP)
-      (== BOP)
+      (< BOPA)
+      (<= BOPB)
+      (== BOPC)
       (return WORDRETURN)
-      (> BOP)
-      (>= BOP);
+      (> BOPD)
+      (>= BOPE);
       (and LOP)
       (or LOP)
       (!(not) UOP)
