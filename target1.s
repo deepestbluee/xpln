@@ -1,53 +1,49 @@
 .data
 
-B: .float 0.0
-C: .float 0.0
-D: .float 0.0
-t626: .float 0.0
-t627: .float 0.0
-t628: .float 0.0
-E: .float 0.0
-F: .float 0.0
-t629: .float 0.0
-t630: .float 0.0
-t631: .float 0.0
-A: .float 0.0
-zzeerroo: .float 0.0
+B: .word 0
+C: .word 0
+D: .word 0
+t362: .word 0
+t363: .word 0
+t364: .word 0
+E: .word 0
+F: .word 0
+t365: .word 0
+t366: .word 0
+t367: .word 0
+A: .word 0
 
 .text
 
 main:
-l.s $f0,C
-l.s $f2,D
-mul.s $f0,$f0,$f2
-s.s $f0,t626
-l.s $f0,B
-l.s $f2,t626
-add.s $f0,$f0,$f2
-s.s $f0,t627
-l.s $f2,E
-#loading dummy zero float to $f0
-l.s $f0,zzeerroo
-sub.s $f0,$f0,$f2
-s.s $f0,t628
-l.s $f0,t628
-l.s $f2,F
-add.s $f0,$f0,$f2
-s.s $f0,t629
-l.s $f0,t629
-#converting to float
-li $t0,5
-mtc1 $t0,$f6
-cvt.s.w $f2,$f6
-#conversion done
-div.s $f0,$f0,$f2
-s.s $f0,t630
-l.s $f0,t627
-l.s $f2,t630
-sub.s $f0,$f0,$f2
-s.s $f0,t631
-l.s $f0,t631
-s.s $f0,A
+lw $t0,C
+lw $t1,D
+mul $t0,$t0,$t1
+sw $t0,t362
+lw $t0,B
+lw $t1,t362
+add $t0,$t0,$t1
+sw $t0,t363
+lw $t1,E
+sub $t0,$zero,$t1
+sw $t0,t364
+lw $t0,t364
+lw $t1,F
+add $t0,$t0,$t1
+sw $t0,t365
+lw $t0,t365
+li $t1,5
+div $t0,$t0,$t1
+sw $t0,t366
+lw $t0,t363
+lw $t1,t366
+sub $t0,$t0,$t1
+sw $t0,t367
+lw $t0,t367
+sw $t0,A
+li $v0,1
+s.s $f12,B
+syscall
 #MIPs termination protocol:
 li $v0,10
 syscall

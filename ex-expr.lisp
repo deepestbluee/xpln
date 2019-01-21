@@ -77,7 +77,7 @@
 ;;  (2ac op p1 p2)
 ;;  (2copy p1 p1)
 
-(defparameter *tac-to-mips* '((MULT "mul.s") (DIV "div.s")(ADD "add.s")(SUB "sub.s")(UMINUS "sub.s")(BLT "blt"))) ; intstruction set corr.
+(defparameter *tac-to-mips* '((MULT "mul.s") (DIV "div.s")(ADD "add.s")(SUB "sub.s")(UMINUS "sub.s")(BLT "blt")(BLE "ble")(BEQ "beq")(BGT "bgt")(BGE "bge"))) ; intstruction set corr.
  ;; MIPS is case-sensitive, so we use strings to map TAC code to MIPS
  ;; it also needs to know whether we use floating point or integer op (.s means float)
 
@@ -150,6 +150,32 @@
     (mk-mips p2 "$f0")
     (format t "~%s.s $f0,~A" p1)))
 
+(defun out-code (val)
+(
+  let ((p1 (first val))
+  (p2 (second val)))
+    (mk-mips p1 "$f12")
+   ; (format t "~%s.s $f12,~A" p1))
+  (format t "~%li $v0,2") 
+  ; (format t "~%move $a0,~A" (first val))
+  (format t "~%syscall")
+  ))
+
+(defun input-code (val)
+(
+  let ((p1 (first val))
+  (p2 (second val)))
+  (format t "~%li $v0,6") 
+  (format t "~%syscall")
+  (format t "~%s.s $f0,~A" p1)
+
+  ))
+
+
+   
+  
+  
+
 (defun create-data-segment ()
   "only for variables; numbers will use immmediate loading rather than lw or l.s."
   (format t "~2%.data~%")
@@ -170,7 +196,14 @@
 	    ((equal itype '2COPY) (mk-mips-2copy (rest instruction)))
       ((equal itype 'inp) (input-code (rest instruction)))
       ((equal itype 'out) (out-code (rest instruction)))
-      ((equal itype 'blt) (blt-code (rest instruction)))      
+
+      ((equal itype 'blt) (blt-code (rest instruction)))
+      ((equal itype 'ble) (ble-code (rest instruction)))      
+      ((equal itype 'beq) (beq-code (rest instruction)))      
+      ((equal itype 'bgt) (bgt-code (rest instruction)))      
+      ((equal itype 'bge) (bge-code (rest instruction)))      
+
+
 	    (t (format t "unknown TAC code: ~A" instruction)))))
   (format t "~%#MIPs termination protocol:")
   (format t "~%li $v0,10") ; MIPs termination protocol
@@ -185,21 +218,20 @@
   (format t "~%syscall")
   )
 
-(defun input-code (val)
-  (format t "~%li $v0,5") 
-  (format t "~%syscall")
-  (format t "~%move $t0, $v0")
-  (format t "~%move ~A" (first val) )
-  (format t ",$t0")
-  )
-(defun out-code (val)
-  (format t "~%li $v0,1") 
-  (format t "~%move $a0,~A" (first val))
-  (format t "~%syscall")
-  )
-
 (defun blt-code (val1 val2 label)
   (format t "~%blt ~A,~A,~A" (first val1) (first val2) (first label)) 
+  )
+(defun ble-code (val1 val2 label)
+  (format t "~%ble ~A,~A,~A" (first val1) (first val2) (first label)) 
+  )
+(defun beq-code (val1 val2 label)
+  (format t "~%beq ~A,~A,~A" (first val1) (first val2) (first label)) 
+  )
+(defun bgt-code (val1 val2 label)
+  (format t "~%bgt ~A,~A,~A" (first val1) (first val2) (first label)) 
+  )
+(defun bge-code (val1 val2 label)
+  (format t "~%bge ~A,~A,~A" (first val1) (first val2) (first label)) 
   )
 
 (defun map-to-mips (code)
@@ -243,8 +275,17 @@
 (defun mk-out (inVal)
   (wrap (list 'out inVal)))
 
-(defun mk-blt (p1 p2 p3)
-  (wrap (list p1 p2 p3)))
+
+(defun mk-blt (p1 p2)
+  (wrap (list 'blt p1 p2)))
+(defun mk-ble (p1 p2)
+  (wrap (list 'ble p1 p2)))
+(defun mk-beq (p1 p2)
+  (wrap (list 'beq p1 p2)))
+(defun mk-bgt (p1 p2)
+  (wrap (list 'bgt p1 p2)))
+(defun mk-bge (p1 p2)
+  (wrap (list 'bge p1 p2)))
 
 
 (defun mk-2copy (p1 p2)
@@ -359,41 +400,41 @@
                         (var-get-place e1)
                         (var-get-place e))))))))
   
-  ; (condition  -->   e BOPB e                     (lambda (e BOP e) (let ((newplace (newtemp)))
-  ;                (mk-sym-entry newplace)
-  ;                (list (mk-place newplace)
-  ;                (mk-code (append (var-get-code tt)
-  ;                     (var-get-code e)
-  ;                     (mk-3ac 'sub newplace
-  ;                       (var-get-place tt)
-  ;                       (var-get-place e))))))))
+  (condition  -->   e BOPB e                     #'(lambda (e1 BOPB e) (let ((newplace (newtemp)))
+                 (mk-sym-entry newplace)
+                 (list (mk-place newplace)
+                 (mk-code (append (var-get-code e1)
+                      (var-get-code e)
+                      (mk-3ac 'ble newplace
+                        (var-get-place e1)
+                        (var-get-place e))))))))
+  
 
-  ; (condition  -->   e BOPC e                     (lambda (e BOP e) (let ((newplace (newtemp)))
-  ;                (mk-sym-entry newplace)
-  ;                (list (mk-place newplace)
-  ;                (mk-code (append (var-get-code tt)
-  ;                     (var-get-code e)
-  ;                     (mk-3ac 'sub newplace
-  ;                       (var-get-place tt)
-  ;                       (var-get-place e))))))))
+  (condition  -->   e BOPC e                     #'(lambda (e1 BOPC e) (let ((newplace (newtemp)))
+                 (mk-sym-entry newplace)
+                 (list (mk-place newplace)
+                 (mk-code (append (var-get-code e1)
+                      (var-get-code e)
+                      (mk-3ac 'beq newplace
+                        (var-get-place e1)
+                        (var-get-place e))))))))
+  (condition  -->   e BOPD e                     #'(lambda (e1 BOPD e) (let ((newplace (newtemp)))
+                 (mk-sym-entry newplace)
+                 (list (mk-place newplace)
+                 (mk-code (append (var-get-code e1)
+                      (var-get-code e)
+                      (mk-3ac 'bgt newplace
+                        (var-get-place e1)
+                        (var-get-place e))))))))
 
-  ; (condition  -->   e BOPD e                     (lambda (e BOP e) (let ((newplace (newtemp)))
-  ;                (mk-sym-entry newplace)
-  ;                (list (mk-place newplace)
-  ;                (mk-code (append (var-get-code tt)
-  ;                     (var-get-code e)
-  ;                     (mk-3ac 'sub newplace
-  ;                       (var-get-place tt)
-  ;                       (var-get-place e))))))))
-
-  ; (condition  -->   e BOPE e                     (lambda (e BOP e) (let ((newplace (newtemp)))
-  ;                (mk-sym-entry newplace)
-  ;                (list (mk-place newplace)
-  ;                (mk-code (append (var-get-code tt)
-  ;                     (var-get-code e)
-  ;                     (mk-3ac 'sub newplace
-  ;                       (var-get-place tt)
-  ;                       (var-get-place e))))))))
+  (condition  -->   e BOPE e                     #'(lambda (e1 BOPE e) (let ((newplace (newtemp)))
+                 (mk-sym-entry newplace)
+                 (list (mk-place newplace)
+                 (mk-code (append (var-get-code e1)
+                      (var-get-code e)
+                      (mk-3ac 'bge newplace
+                        (var-get-place e1)
+                        (var-get-place e))))))))
 
   (condition  -->   condition LOP condition                     #'(lambda (s)
               (list (mk-place nil)
@@ -409,6 +450,8 @@
           (list (mk-code (append (var-get-code e) (mk-2copy (t-get-val ID)
                         (var-get-place e))))
                 (mk-place (t-get-val ID))))))
+
+
   (e  -->  tt MINUS e              #'(lambda (tt SUB e) (let ((newplace (newtemp)))
                  (mk-sym-entry newplace)
                  (list (mk-place newplace)
@@ -426,6 +469,7 @@
                         (var-get-place tt)
                         (var-get-place e))))))))
   (e  -->  tt                        #'(lambda (tt)(identity tt)))  
+    (e  -->  condition                        #'(lambda (condition)(identity condition)))  
   (e  -->  func                        #'(lambda (s)
               (list (mk-place nil)
               (mk-code (var-get-code s)))))   

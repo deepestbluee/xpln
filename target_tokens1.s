@@ -50,6 +50,9 @@ sub.s $f0,$f0,$f2
 s.s $f0,t389
 l.s $f0,t389
 s.s $f0,A
+li $v0,2
+s.s $f12,A
+syscall
 #MIPs termination protocol:
 li $v0,10
 syscall
