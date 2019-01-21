@@ -166,6 +166,8 @@
       (cond ((equal itype '3AC) (mk-mips-3ac (rest instruction)))
 	    ((equal itype '2AC) (mk-mips-2ac (rest instruction)))
 	    ((equal itype '2COPY) (mk-mips-2copy (rest instruction)))
+      ((equal itype 'inp) (input-code (rest instruction)))
+      ((equal itype 'out) (out-code (rest instruction)))
 	    (t (format t "unknown TAC code: ~A" instruction)))))
   (format t "~%#MIPs termination protocol:")
   (format t "~%li $v0,10") ; MIPs termination protocol
@@ -173,6 +175,25 @@
   (format t "~%.end main")
   )
 
+
+(defun add-print-syscall (t0)
+  (format t "~%li $v0,1") ; MIPs termination protocol
+  (format t "~%add $a0 ," t0 ",$zzeerroo")
+  (format t "~%syscall")
+  )
+
+(defun input-code (val)
+  (format t "~%li $v0,5") 
+  (format t "~%syscall")
+  (format t "~%move $t0, $v0")
+  (format t "~%move ~A" (first val) )
+  (format t ",$t0")
+  )
+(defun out-code (val)
+  (format t "~%li $v0,1") 
+  (format t "~%move $a0,~A" (first val))
+  (format t "~%syscall")
+  )
 
 (defun map-to-mips (code)
   (if (stringp *outstream*) (dribble *outstream*))  ; open out
@@ -208,11 +229,19 @@
 (defun mk-3ac (op p1 p2 p3)
   (wrap (list '3ac op p1 p2 p3)))
 
+
+(defun mk-inp (inVal)
+  (wrap (list 'inp inVal)))
+
+(defun mk-out (inVal)
+  (wrap (list 'out inVal)))
+
 (defun mk-2copy (p1 p2)
   (wrap (list '2copy p1 p2)))
 
 (defun newtemp ()
   (gensym "t"))       ; returns a new symbol prefixed t at Lisp run-time
+
 
 ;;;; LALR data 
 (defparameter grammar
@@ -235,7 +264,7 @@
   (temp -->        #'(lambda (temp) 
          )) 
 
-  (stmts --> stmt END stmts             #'(lambda (stmt END stmt) 
+  (stmts --> stmt END stmts             #'(lambda (stmt END stmts) 
               (list (mk-place nil)
               (mk-code (append (var-get-code stmt)
                    (var-get-code stmts))))))
@@ -249,7 +278,10 @@
               (list (mk-place nil)
               (mk-code (append (var-get-code stmts)
                    (var-get-code s))))))
-  
+  (stmt  --> io                   #'(lambda (io)
+              (list (mk-place nil)
+              (mk-code (var-get-code io)))))
+    
   (stmt  --> s                   #'(lambda (s)
               (list (mk-place nil)
               (mk-code (var-get-code s)))))
@@ -260,12 +292,9 @@
   (stmt  --> wh                   #'(lambda (s)
               (list (mk-place nil)
               (mk-code (var-get-code s)))))  
-  (stmt  --> ret                   #'(lambda (s)
-              (list (mk-place nil)
-              (mk-code (var-get-code s)))))
-  (stmt  --> io                   #'(lambda (s)
-              (list (mk-place nil)
-              (mk-code (var-get-code s)))))
+  (stmt  --> ret                  #'(lambda (ret)(identity ret))) 
+
+
   (ifx  --> WORD_IF condition stmts elsex ENDIF                   #'(lambda (s)
               (list (mk-place nil)
               (mk-code (var-get-code s)))))  
@@ -279,16 +308,19 @@
   (elsex --> )
   (wh  --> WORD_WHILE condition stmts ENDWH                   #'(lambda (s)
               (list (mk-place nil)
-              (mk-code (var-get-code s)))))  
-  (ret  --> WORD_RETURN e                 #'(lambda (s)
-              (list (mk-place nil)
-              (mk-code (var-get-code s)))))  
-  (io  -->  INPUT ID                    #'(lambda (s)
-              (list (mk-place nil)
-              (mk-code (var-get-code s)))))   
-  (io  -->  OUTPUT ID                   #'(lambda (s)
-              (list (mk-place nil)
-              (mk-code (var-get-code s)))))       
+              (mk-code (var-get-code s))))) 
+  (ret  --> WORDRETURN e                  (let ((newplace (newtemp)))
+                 (mk-sym-entry newplace)
+                 (list (mk-place newplace)
+                 (mk-code (append (var-get-code e)
+                     (add-print-syscall (sym-get-value e)) ))))) 
+
+  (io  -->  INPUT ID                    #'(lambda (INPUT ID) 
+                 (list (mk-place nil) (mk-code (mk-inp (t-get-val ID)))))) 
+
+
+  (io  -->  OUTPUT ID                  #'(lambda (OUTPUT ID) 
+                 (list (mk-place nil) (mk-code (mk-out (t-get-val ID)))))) 
   (def  -->   FUN ID plist stmts ENDFUN                       #'(lambda (s)
               (list (mk-place nil)
               (mk-code (var-get-code s)))))       
@@ -298,7 +330,7 @@
   (parameters --> ff COMMA parameters#'(lambda (s)
               (list (mk-place nil)
               (mk-code (var-get-code s)))))
-  (parameters --> ff#'(lambda (s)
+  (parameters --> ff #'(lambda (s)
               (list (mk-place nil)
               (mk-code (var-get-code s))))) 
   (parameters --> )   
@@ -358,9 +390,7 @@
                         (var-get-place tt))))))))  
   (tt  -->  ff  #'(lambda (ff)(identity ff)))
  
-  ; (ff -->  NUMBER                       #'(lambda (s)
-  ;             (list (mk-place nil)
-  ;             (mk-code (var-get-code s)))))   
+ 
   (ff  -->  ID                         #'(lambda (ID) (progn 
                  (mk-sym-entry (t-get-val ID))
                  (list (mk-place (t-get-val ID))
@@ -368,7 +398,7 @@
   (ff  -->  OPEN_PLIST e CLOSE_PLIST  #'(lambda (OPEN_PLIST e CLOSE_PLIST) (identity e)))
   ))
 
-(defparameter lexforms '(END BOP LOP UOP WORD_RETURN INPUT OUTPUT OPEN_PLIST CLOSE_PLIST COMMA COLONS EQUALS PLUS MINUS MULTI DIVIDE WORD_IF WORD_WHILE ENDIF ENDWH FUN ENDFUN WORD_ELSE NUMBER ID))
+(defparameter lexforms '(END BOP LOP UOP WORDRETURN INPUT OUTPUT OPEN_PLIST CLOSE_PLIST COMMA COLONS EQUALS PLUS MINUS MULTI DIVIDE WORD_IF WORD_WHILE ENDIF ENDWH FUN ENDFUN WORD_ELSE NUMBER ID))
 
   (defparameter lexicon '(
             (\; END) ;; all but ID goes in the lexicon
@@ -376,12 +406,12 @@
       (< BOP)
       (<= BOP)
       (== BOP)
+      (return WORDRETURN)
       (> BOP)
       (>= BOP);
       (and LOP)
       (or LOP)
       (!(not) UOP)
-      (return WORD_RETURN)
       (input INPUT)
       (output OUTPUT)
 
