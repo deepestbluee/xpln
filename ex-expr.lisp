@@ -191,7 +191,8 @@
   (format t "main:")
   (dolist (instruction (second code)) ; NB. code is a grammar variable feature (code (i1 i2 i3))
     (let ((itype (first instruction)))
-      (cond ((equal itype '3AC) (mk-mips-3ac (rest instruction)))
+      (cond 
+      ((equal itype '3AC) (mk-mips-3ac (rest instruction)))
 	    ((equal itype '2AC) (mk-mips-2ac (rest instruction)))
 	    ((equal itype '2COPY) (mk-mips-2copy (rest instruction)))
       ((equal itype 'inp) (input-code (rest instruction)))
@@ -218,8 +219,8 @@
   (format t "~%syscall")
   )
 
-(defun blt-code (val1 val2 label)
-  (format t "~%blt ~A,~A,~A" (first val1) (first val2) (first label)) 
+(defun blt-code (val1 val2 )
+  (format t "~%blt ~A,~A,label~A" (first val1) (first val2) ) 
   )
 (defun ble-code (val1 val2 label)
   (format t "~%ble ~A,~A,~A" (first val1) (first val2) (first label)) 
@@ -247,6 +248,8 @@
   (pprint-code code)
   (format t "~2%QtSpim target code:")
   (map-to-mips code))
+
+
 
 ;; some aux functions  to retrieve amd make feature values for grammar variables
 
@@ -277,7 +280,7 @@
 
 
 (defun mk-blt (p1 p2)
-  (wrap (list 'blt p1 p2)))
+  (wrap (list 'blt p1 p2 label)))
 (defun mk-ble (p1 p2)
   (wrap (list 'ble p1 p2)))
 (defun mk-beq (p1 p2)
@@ -348,17 +351,24 @@
 ;simdilik burada
  (stmt  --> condition                  #'(lambda (condition)(identity condition))) 
 ;aa
-  (ifx  --> WORD_IF condition stmts elsex ENDIF                   #'(lambda (s)
-              (list (mk-place nil)
-              (mk-code (var-get-code s)))))  
+ 
 
-  (elsex --> WORD_ELSE stmts elsex  #'(lambda (s)
+  (ifx  --> WORD_IF condition stmts elsex ENDIF                  #'(lambda (WORD_IF condition stmts elsex ENDIF) 
               (list (mk-place nil)
-              (mk-code (var-get-code s)))))
-  (elsex --> WORD_ELSE stmts #'(lambda (s)
+              (mk-code (append (var-get-code condition)
+                   (var-get-code stmts)  (var-get-code elsex)))))) 
+
+  (elsex --> WORD_ELSE stmts elsex #'(lambda (WORD_ELSE stmts elsex ) 
               (list (mk-place nil)
-              (mk-code (var-get-code s)))))
+              (mk-code (append (var-get-code stmts)
+                   (var-get-code elsex))))))
+  (elsex --> WORD_ELSE stmts  #'(lambda (WORD_ELSE stmts)
+              (list (mk-place nil)
+              (mk-code (var-get-code stmts)))))
   (elsex --> )
+
+
+
   (wh  --> WORD_WHILE condition stmts ENDWH                   #'(lambda (s)
               (list (mk-place nil)
               (mk-code (var-get-code s))))) 
@@ -391,6 +401,7 @@
               (list (mk-place nil)
               (mk-code (var-get-code s)))))   
   
+
   (condition  -->   e BOPA e                     #'(lambda (e1 BOPA e) (let ((newplace (newtemp)))
                  (mk-sym-entry newplace)
                  (list (mk-place newplace)
