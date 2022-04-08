@@ -1,6 +1,6 @@
-I only finished assignment,add,multiply,subtract,divide and input&output operations. 
+Add,multiply,subtract,divide and input&output operations are handled in this project. 
 
-In order to test my code do the followings.
+In order to test the code do the followings:
 
 
 $ yalalr
